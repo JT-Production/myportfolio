@@ -3,7 +3,12 @@
 import React from "react";
 import { Container } from "../ui/Container";
 import { socials } from "../../constants/socials";
-import { GithubIcon, LinkedinIcon, TwitterIcon, DribbbleIcon } from "../ui/Icons";
+import {
+  GithubIcon,
+  LinkedinIcon,
+  TwitterIcon,
+  DribbbleIcon,
+} from "../ui/Icons";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Github: GithubIcon,
@@ -20,7 +25,7 @@ export function Footer() {
       <Container className="flex flex-col sm:flex-row items-center justify-between gap-6">
         {/* Left Side: Copyright */}
         <p className="text-xs sm:text-sm text-text-secondary font-medium tracking-wide">
-          &copy; {currentYear} Joey. Built from scratch with Next.js, Tailwind v4, & Framer Motion.
+          &copy; {currentYear} Joey. Built with 🤍.
         </p>
 
         {/* Right Side: Social links */}
