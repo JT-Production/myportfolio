@@ -68,7 +68,7 @@ export function Navbar() {
           className={`flex items-center justify-between ${isScrolled ? "px-6" : "md:px-20"}`}
         >
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2 group">
+          <a href="/" className="flex items-center gap-2 group">
             <Image
               src={logo}
               alt="Logo"
