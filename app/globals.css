@@ -124,4 +124,56 @@ body {
   }
 }
 
+.skills-orb-shell {
+  perspective: 900px;
+  transform-style: preserve-3d;
+  transition: transform 180ms ease-out;
+}
 
+.pixel-orb {
+  transform-style: preserve-3d;
+}
+
+.skills-orb-shell.is-visible .pixel-orb {
+  animation: pixel-orb-rotate 32s linear infinite;
+}
+
+.pixel-orb-block {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  background: linear-gradient(135deg, #d6e5ff, #6888c7 58%, #526094);
+  box-shadow: 2px 2px 0 rgba(43, 62, 100, 0.9), 3px 3px 0 rgba(22, 32, 54, 0.7);
+  transform-style: preserve-3d;
+}
+
+@keyframes pixel-orb-rotate {
+  from {
+    transform: rotateX(-12deg) rotateY(0deg);
+  }
+  to {
+    transform: rotateX(-12deg) rotateY(360deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .pixel-orb-block {
+    width: 6px;
+    height: 6px;
+  }
+
+  .pixel-orb {
+    animation: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skills-orb-shell,
+  .pixel-orb,
+  .pixel-orb-block {
+    animation: none !important;
+    transition: none !important;
+  }
+}

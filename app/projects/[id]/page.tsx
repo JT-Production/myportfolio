@@ -1,241 +1,407 @@
-﻿"use client";
-
-import * as React from "react";
-import Link from "next/link";
+import type { Metadata } from "next";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import {
-  ArrowLeft,
-  ArrowUpRight,
-  ChevronDown,
-  GitBranch,
-  Globe,
-  Layers,
-} from "lucide-react";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { Navbar } from "../../../components/navbar/Navbar";
-import { projects } from "../../../constants/projects";
-import { Tag } from "../../../components/ui/Tag";
-import { Button } from "../../../components/ui/Button";
+import { ProjectImagePlaceholder } from "../../../components/projects/ProjectImagePlaceholder";
+import { getProjectById, projects } from "../../../constants/projects";
 
-type ProjectsDetailPageProps = {
+type ProjectPageProps = {
   params: Promise<{ id: string }>;
 };
 
-export default function ProjectDetailPage({ params }: ProjectsDetailPageProps) {
-  const resolvedParams = React.use(params);
-  const project = projects.find(
-    (projectItem) => projectItem.id === resolvedParams.id,
+export function generateStaticParams() {
+  return projects.flatMap((project) =>
+    [project.id, ...(project.legacyIds ?? [])].map((id) => ({ id })),
   );
+}
+
+export async function generateMetadata({
+  params,
+}: ProjectPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const project = getProjectById(id);
 
   if (!project) {
-    return (
-      <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center px-6 py-24 text-center">
-        <div className="max-w-xl rounded-[32px] border border-white/10 bg-[#0b0b0b] p-10 shadow-2xl">
-          <h1 className="text-3xl font-semibold text-white">
-            Project not found
-          </h1>
-          <p className="mt-4 text-sm text-white/60">
-            The project you were looking for does not exist or has been removed.
-          </p>
-          <Link
-            href="/projects"
-            className="mt-8 inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:border-white/20 hover:bg-white/10"
-          >
-            Back to projects
-          </Link>
-        </div>
-      </div>
-    );
+    return {
+      title: "Project not found",
+      description: "This project could not be found.",
+    };
   }
+
+  return {
+    title: `${project.title} — ${project.subHeader}`,
+    description: project.summary,
+    openGraph: {
+      title: `${project.title} — ${project.subHeader}`,
+      description: project.summary,
+      type: "article",
+      ...(project.image ? { images: [project.image] } : {}),
+    },
+  };
+}
+
+function SectionLabel({ number, children }: { number: string; children: string }) {
+  return (
+    <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-blue-200/65">
+      {number} / {children}
+    </p>
+  );
+}
+
+export default async function ProjectDetailPage({ params }: ProjectPageProps) {
+  const { id } = await params;
+  const project = getProjectById(id);
+
+  if (!project) notFound();
+
+  const projectIndex = projects.findIndex((item) => item.id === project.id);
+  const previousProject = projects[(projectIndex - 1 + projects.length) % projects.length];
+  const nextProject = projects[(projectIndex + 1) % projects.length];
+  const gallery =
+    project.gallery?.length
+      ? project.gallery
+      : [
+          {
+            alt: `Concept visual for ${project.title}`,
+            caption: "Concept visual — screenshot not supplied",
+          },
+          {
+            alt: `Product direction for ${project.title}`,
+            caption: "Product direction — screenshot not supplied",
+          },
+          {
+            alt: `Interface details for ${project.title}`,
+            caption: "Interface detail — screenshot not supplied",
+          },
+        ];
 
   return (
     <div className="min-h-screen bg-[#050505] text-white">
       <Navbar />
 
-      <main className="mx-auto max-w-7xl px-6 pt-40 sm:px-8 sm:py-20">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="grid gap-12 mt-10 xl:grid-cols-[0.9fr_1.1fr]"
-        >
-          <div className="space-y-8">
+      <main>
+        <section className="relative overflow-hidden border-b border-white/[0.06] pt-32 sm:pt-40">
+          <div className="mx-auto max-w-7xl px-6 pb-12 sm:px-8 sm:pb-16">
             <Link
               href="/projects"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/70 transition hover:border-white/20 hover:bg-white/10"
+              className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/10 px-4 text-sm text-white/65 transition hover:border-white/30 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to projects
+              All projects
             </Link>
 
-            <div className="space-y-4">
-              <div className="inline-flex flex-wrap items-center gap-3">
-                <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/60">
-                  {project.category}
-                </span>
-                <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/60">
-                  {project.year}
-                </span>
-              </div>
-              <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white">
-                {project.title}
-              </h1>
-              <p className="max-w-2xl text-base leading-8 text-white/70">
-                {project.summary}
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              {project.tags.map((tag) => (
-                <Tag key={tag}>{tag}</Tag>
-              ))}
-            </div>
-
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              {project.category.includes("Web Development") && (
-                <Button
-                  href={project.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  variant="primary"
-                  icon={<ArrowUpRight className="w-4 h-4" />}
-                >
-                  Live Website
-                </Button>
-              )}
-              {/* {project.githubUrl && (
-                <Button
-                  href={project.githubUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  variant="secondary"
-                  icon={<GitBranch className="w-4 h-4" />}
-                >
-                  GitHub
-                </Button>
-              )} */}
-              {project.category.includes("UI UX") && (
-                <Button
-                  // href={project.behanceUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  variant="secondary"
-                  icon={<Layers className="w-4 h-4" />}
-                >
-                  Figma
-                </Button>
-              )}
-            </div>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.85, ease: "easeOut" }}
-            className="relative overflow-hidden rounded-[32px] border border-white/10 bg-[#0a0a0a] p-4 shadow-[0_40px_120px_rgba(0,0,0,0.25)]"
-          >
-            <div className="absolute right-0 top-0 h-full w-full bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.08),_transparent_32%)] pointer-events-none" />
-            <Image
-              src={project.image}
-              alt={project.title}
-              width={1120}
-              height={840}
-              className="rounded-[28px] object-cover shadow-2xl"
-            />
-          </motion.div>
-        </motion.div>
-
-        <section className="mt-16 space-y-10">
-          <div className="grid gap-8 lg:grid-cols-[1fr_0.65fr]">
-            <div className="space-y-4 rounded-[32px] border border-white/10 bg-[#0b0b0b] p-8 shadow-[0_20px_70px_rgba(0,0,0,0.18)]">
-              <h2 className="text-3xl font-semibold text-white">
-                Case Study Overview
-              </h2>
-              <p className="text-base leading-8 text-white/70">
-                {project.description} This project merges thoughtful product
-                structure with premium brand polish and a seamless content
-                hierarchy.
-              </p>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-[24px] border border-white/10 bg-black/60 p-6">
-                  <p className="text-sm uppercase tracking-[0.28em] text-white/50">
-                    Design focus
-                  </p>
-                  <p className="mt-3 text-lg font-semibold text-white">
-                    Minimal UI paired with motion-led storytelling.
-                  </p>
-                </div>
-                <div className="rounded-[24px] border border-white/10 bg-black/60 p-6">
-                  <p className="text-sm uppercase tracking-[0.28em] text-white/50">
-                    Engineering
-                  </p>
-                  <p className="mt-3 text-lg font-semibold text-white">
-                    Responsive, accessible, and built for modern performance.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-[32px] border border-white/10 bg-[#0b0b0b] p-8 shadow-[0_20px_70px_rgba(0,0,0,0.18)]">
-              <p className="text-sm uppercase tracking-[0.3em] text-white/50">
-                Scroll prompt
-              </p>
-              <div className="mt-6 flex items-center gap-3 rounded-[24px] border border-white/10 bg-white/5 px-5 py-4">
-                <div className="rounded-full bg-white/10 p-3 text-white">
-                  <ChevronDown className="h-5 w-5 animate-bounce" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-white">
-                    Scroll for more visuals
-                  </p>
-                  <p className="text-sm text-white/60">
-                    Explore the project gallery and reference screens below.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-8">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="mt-10 grid items-end gap-8 lg:grid-cols-[1fr_auto]">
               <div>
-                <p className="text-sm uppercase tracking-[0.3em] text-white/40">
-                  Pictures
+                <div className="flex flex-wrap gap-2">
+                  {project.categories.map((category) => (
+                    <span
+                      key={category}
+                      className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white/55"
+                    >
+                      {category}
+                    </span>
+                  ))}
+                </div>
+                <p className="mt-7 font-mono text-xs uppercase tracking-[0.2em] text-blue-200/70">
+                  Case study / {project.subHeader}
                 </p>
-                <h2 className="mt-3 text-3xl font-semibold text-white">
-                  Additional screens
-                </h2>
+                <h1 className="mt-4 max-w-4xl text-4xl font-medium leading-[1.05] tracking-tight sm:text-6xl">
+                  {project.title}
+                </h1>
+                <p className="mt-5 max-w-3xl text-lg leading-8 text-white/65">
+                  {project.summary}
+                </p>
               </div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/70">
-                <Globe className="h-4 w-4" />
-                Available live & gallery view
-              </div>
+
+              <dl className="grid min-w-56 gap-4 border-l border-white/10 pl-5 text-sm">
+                <div>
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/40">
+                    Role
+                  </dt>
+                  <dd className="mt-1 text-white/80">{project.role.join(", ")}</dd>
+                </div>
+                {project.company && (
+                  <div>
+                    <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/40">
+                      Company
+                    </dt>
+                    <dd className="mt-1 text-white/80">{project.company}</dd>
+                  </div>
+                )}
+                {project.period && (
+                  <div>
+                    <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/40">
+                      Period
+                    </dt>
+                    <dd className="mt-1 text-white/80">{project.period}</dd>
+                  </div>
+                )}
+              </dl>
             </div>
 
-            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {project.imageArr.map((image, index) => (
-                <motion.div
-                  key={`${project.id}-picture-${index}`}
-                  initial={{ opacity: 0, y: 18 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.7, delay: index * 0.06 }}
-                  className="overflow-hidden md:h-fit rounded-[28px] border border-white/10 bg-[#090909] shadow-[0_20px_60px_rgba(0,0,0,0.16)]"
-                >
-                  <div className="relative h-full w-full overflow-hidden">
-                    <Image
-                      src={image || project.image}
-                      alt={`${project.title} screenshot ${index + 1}`}
-                      width={1000}
-                      height={1000}
-                      className="object-contain  transition-transform duration-700 ease-out hover:scale-105"
-                    />
-                  </div>
-                </motion.div>
-              ))}
+            {project.technologies.length > 0 && (
+              <div className="mt-8 flex flex-wrap gap-2">
+                {project.technologies.map((technology) => (
+                  <span
+                    key={technology}
+                    className="rounded-md border border-blue-200/15 bg-blue-200/[0.04] px-3 py-1.5 font-mono text-xs text-blue-100/70"
+                  >
+                    {technology}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="mx-auto max-w-7xl px-6 pb-8 sm:px-8 sm:pb-12">
+            <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border border-white/10 bg-[#0b0d12] sm:rounded-3xl">
+              {project.image ? (
+                <Image
+                  src={project.image}
+                  alt={`${project.title} project cover`}
+                  fill
+                  priority
+                  sizes="100vw"
+                  className="object-cover"
+                />
+              ) : (
+                <ProjectImagePlaceholder
+                  title={project.title}
+                  theme={project.theme}
+                  label="Case study cover"
+                />
+              )}
             </div>
           </div>
         </section>
+
+        <div className="mx-auto max-w-7xl space-y-20 px-6 py-16 sm:px-8 sm:py-24">
+          <section className="grid gap-8 lg:grid-cols-[.65fr_1.35fr]">
+            <div>
+              <SectionLabel number="01">Overview</SectionLabel>
+              <h2 className="mt-4 max-w-xs text-3xl font-medium tracking-tight">
+                A closer look at the product.
+              </h2>
+            </div>
+            <p className="max-w-3xl text-lg leading-8 text-white/65">
+              {project.caseStudy.overview}
+            </p>
+          </section>
+
+          <section className="grid gap-8 border-t border-white/[0.08] pt-10 lg:grid-cols-[.65fr_1.35fr]">
+            <div>
+              <SectionLabel number="02">Challenge</SectionLabel>
+              <h2 className="mt-4 max-w-xs text-3xl font-medium tracking-tight">
+                The problem space.
+              </h2>
+            </div>
+            <p className="max-w-3xl text-lg leading-8 text-white/65">
+              {project.caseStudy.challenge}
+            </p>
+          </section>
+
+          <section className="grid gap-8 border-t border-white/[0.08] pt-10 lg:grid-cols-[.65fr_1.35fr]">
+            <div>
+              <SectionLabel number="03">Contribution</SectionLabel>
+              <h2 className="mt-4 max-w-xs text-3xl font-medium tracking-tight">
+                My role in the work.
+              </h2>
+            </div>
+            <ul className="grid gap-3 sm:grid-cols-2">
+              {project.caseStudy.contributions.map((contribution) => (
+                <li
+                  key={contribution}
+                  className="border border-white/[0.08] bg-white/[0.02] p-5 text-sm leading-6 text-white/70"
+                >
+                  {contribution}
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {project.caseStudy.process && (
+            <section className="border-t border-white/[0.08] pt-10">
+              <SectionLabel number="04">Process</SectionLabel>
+              <div className="mt-7 grid gap-4 md:grid-cols-2">
+                {project.caseStudy.process.map((step, index) => (
+                  <article
+                    key={step.title}
+                    className="border border-white/[0.08] bg-[#090a0d] p-6 sm:p-8"
+                  >
+                    <p className="font-mono text-xs text-blue-200/60">
+                      STEP {String(index + 1).padStart(2, "0")}
+                    </p>
+                    <h3 className="mt-5 text-xl font-medium">{step.title}</h3>
+                    <p className="mt-3 text-sm leading-6 text-white/60">
+                      {step.description}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {project.caseStudy.features && (
+            <section className="border-t border-white/[0.08] pt-10">
+              <SectionLabel number="05">Key experiences</SectionLabel>
+              <h2 className="mt-4 text-3xl font-medium tracking-tight">
+                The product, in parts.
+              </h2>
+              <div className="mt-7 grid gap-4 sm:grid-cols-2">
+                {project.caseStudy.features.map((feature, index) => (
+                  <article
+                    key={feature.title}
+                    className="relative overflow-hidden border border-white/[0.08] bg-[#090a0d] p-6 sm:p-8"
+                  >
+                    <span className="font-mono text-xs text-blue-200/55">
+                      MODULE / {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <h3 className="mt-5 text-xl font-medium">{feature.title}</h3>
+                    <p className="mt-3 text-sm leading-6 text-white/60">
+                      {feature.description}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <section className="border-t border-white/[0.08] pt-10">
+            <SectionLabel number="06">Visuals</SectionLabel>
+            <h2 className="mt-4 text-3xl font-medium tracking-tight">
+              {project.title} / gallery
+            </h2>
+            <div className="mt-7 grid gap-4 md:grid-cols-2">
+              {gallery.map((item, index) => (
+                <figure
+                  key={`${item.alt}-${index}`}
+                  className="overflow-hidden border border-white/[0.08] bg-[#090a0d]"
+                >
+                  <div className="relative aspect-[16/10]">
+                    {item.src ? (
+                      <Image
+                        src={item.src}
+                        alt={item.alt}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <ProjectImagePlaceholder
+                        title={project.title}
+                        theme={project.theme}
+                        label={`Gallery / ${String(index + 1).padStart(2, "0")}`}
+                      />
+                    )}
+                  </div>
+                  {item.caption && (
+                    <figcaption className="border-t border-white/[0.06] px-4 py-3 font-mono text-[10px] uppercase tracking-wider text-white/45">
+                      {item.caption}
+                    </figcaption>
+                  )}
+                </figure>
+              ))}
+            </div>
+          </section>
+
+          {project.caseStudy.technicalDetails &&
+            project.caseStudy.technicalDetails.length > 0 && (
+              <section className="grid gap-8 border-t border-white/[0.08] pt-10 lg:grid-cols-[.65fr_1.35fr]">
+                <div>
+                  <SectionLabel number="07">Implementation</SectionLabel>
+                  <h2 className="mt-4 max-w-xs text-3xl font-medium tracking-tight">
+                    Engineering notes.
+                  </h2>
+                </div>
+                <ul className="space-y-3">
+                  {project.caseStudy.technicalDetails.map((detail) => (
+                    <li
+                      key={detail}
+                      className="border-l border-blue-200/40 pl-4 text-sm leading-6 text-white/65"
+                    >
+                      {detail}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+          <section className="grid gap-8 border-t border-white/[0.08] pt-10 lg:grid-cols-[.65fr_1.35fr]">
+            <div>
+              <SectionLabel number="08">Reflection</SectionLabel>
+              <h2 className="mt-4 max-w-xs text-3xl font-medium tracking-tight">
+                What the work reinforced.
+              </h2>
+            </div>
+            <ul className="space-y-4">
+              {project.caseStudy.learnings.map((learning) => (
+                <li
+                  key={learning}
+                  className="border-b border-white/[0.08] pb-4 text-base leading-7 text-white/65"
+                >
+                  {learning}
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <nav
+            aria-label="Project navigation"
+            className="grid gap-3 border-t border-white/[0.08] pt-8 sm:grid-cols-2"
+          >
+            <Link
+              href={`/projects/${previousProject.id}`}
+              className="group flex min-h-24 flex-col justify-center border border-white/[0.08] p-5 transition hover:border-white/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300"
+            >
+              <span className="font-mono text-[10px] uppercase tracking-wider text-white/40">
+                Previous project
+              </span>
+              <span className="mt-2 flex items-center justify-between text-sm text-white/80">
+                {previousProject.title}
+                <ArrowLeft className="h-4 w-4 transition group-hover:-translate-x-1" />
+              </span>
+            </Link>
+            <Link
+              href={`/projects/${nextProject.id}`}
+              className="group flex min-h-24 flex-col justify-center border border-white/[0.08] p-5 transition hover:border-white/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300"
+            >
+              <span className="font-mono text-[10px] uppercase tracking-wider text-white/40">
+                Next project
+              </span>
+              <span className="mt-2 flex items-center justify-between text-sm text-white/80">
+                {nextProject.title}
+                <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+              </span>
+            </Link>
+          </nav>
+
+          <section className="flex flex-col items-start justify-between gap-6 border border-blue-200/15 bg-blue-200/[0.03] p-6 sm:flex-row sm:items-center sm:p-8">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-blue-200/70">
+                Have a product in mind?
+              </p>
+              <h2 className="mt-3 text-2xl font-medium">
+                Let&apos;s make the next one thoughtful.
+              </h2>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/projects"
+                className="inline-flex min-h-11 items-center gap-2 border border-white/15 px-4 text-sm text-white/75 transition hover:border-white/40 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300"
+              >
+                Project index
+              </Link>
+              <Link
+                href="/#contact"
+                className="inline-flex min-h-11 items-center gap-2 bg-white px-4 text-sm font-medium text-black transition hover:bg-blue-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300"
+              >
+                Get in touch <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </section>
+        </div>
       </main>
     </div>
   );

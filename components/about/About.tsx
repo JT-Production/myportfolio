@@ -3,16 +3,9 @@
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Download } from "lucide-react";
 import { Container } from "../ui/Container";
 import { SectionHeading } from "../ui/SectionHeading";
 import { Button } from "../ui/Button";
-
-const stats = [
-  { value: "3+", label: "Years Experience" },
-  { value: "15+", label: "Projects Shipped" },
-  { value: "100%", label: "Client Delight" },
-];
 
 export function About() {
   return (
@@ -61,46 +54,22 @@ export function About() {
             </h3>
 
             <p className="text-base text-text-secondary leading-relaxed font-medium mb-6">
-              I am Joey, a senior Frontend and Design Engineer with a passion
-              for constructing premium digital ecosystems. I believe code should
-              not only function perfectly, but also look and feel beautiful. My
-              process bridges high fidelity UI/UX design prototypes with custom
-              engineering implementation.
+              I am Joey, a Full-Stack and Mobile Developer who enjoys turning
+              product ideas into polished, working digital experiences. I work
+              across interface design, web development, and native mobile
+              development to bring products from concept to implementation.
             </p>
 
             <p className="text-base text-text-secondary leading-relaxed font-medium mb-10">
-              Over the past 3+ years, I have worked with boutique creative
-              agencies and leading product divisions. I specialize in React,
-              TypeScript, Next.js, Framer Motion, and fine-tuning animation
-              parameters for high performance.
+              My work includes React and Next.js web applications, React Native
+              mobile apps, and product design for banking, commerce, and
+              creative projects. I focus on building clear, responsive
+              experiences that meet the needs of the people using them.
             </p>
 
-            {/* Quick Metrics */}
-            <div className="grid grid-cols-3 gap-4 sm:gap-6 mb-10 py-6 border-y border-white/[0.06]">
-              {stats.map((stat, i) => (
-                <div key={i} className="flex flex-col gap-1.5">
-                  <span className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-                    {stat.value}
-                  </span>
-                  <span className="text-xs sm:text-sm text-text-secondary font-medium tracking-wide">
-                    {stat.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* Action CTAs */}
             <div className="flex flex-wrap gap-4">
               <Button href="#contact" variant="primary" size="md">
-                Let's Work Together
-              </Button>
-              <Button
-                href="#"
-                variant="outline"
-                size="md"
-                icon={<Download className="w-4 h-4" />}
-              >
-                Download Resume
+                Let&apos;s Work Together
               </Button>
             </div>
           </motion.div>

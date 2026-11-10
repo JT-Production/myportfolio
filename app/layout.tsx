@@ -19,32 +19,32 @@ const NeueHaasGrotesk = localfont({
 });
 
 export const metadata: Metadata = {
-  title: "Joey | Senior Frontend & Design Engineer Portfolio",
+  title: "Joey | Full-Stack & Mobile Developer",
   description:
-    "Interactive portfolio of Joey, a Senior Frontend & Design Engineer specializing in clean typography, custom responsive design systems, WebGL, and premium user experiences.",
+    "Portfolio of Joey, a Full-Stack and Mobile Developer building web applications, React Native apps, and thoughtful digital product experiences.",
   keywords: [
-    "Frontend Engineer",
-    "Design Engineer",
+    "Full-Stack Developer",
+    "Mobile Developer",
+    "React Native Developer",
     "Portfolio",
     "Next.js",
     "Tailwind CSS",
-    "Framer Motion",
     "TypeScript",
     "React",
   ],
   authors: [{ name: "Joey" }],
   openGraph: {
-    title: "Joey | Senior Frontend & Design Engineer Portfolio",
+    title: "Joey | Full-Stack & Mobile Developer",
     description:
-      "Interactive portfolio of Joey, a Senior Frontend & Design Engineer.",
+      "Portfolio of Joey, a Full-Stack and Mobile Developer building web and mobile products.",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Joey | Senior Frontend & Design Engineer Portfolio",
+    title: "Joey | Full-Stack & Mobile Developer",
     description:
-      "Interactive portfolio of Joey, a Senior Frontend & Design Engineer.",
+      "Portfolio of Joey, a Full-Stack and Mobile Developer building web and mobile products.",
   },
 };
 

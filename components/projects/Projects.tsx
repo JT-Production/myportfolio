@@ -16,7 +16,7 @@ export function Projects() {
         {/* Section Heading */}
         <SectionHeading
           title="Selected Projects"
-          description="A selection of recent engineering and design projects built with focus on pixel perfection and performance."
+          description="A selection of product, mobile, frontend, and full-stack work."
         />
 
         {/* Grid List */}

@@ -10,9 +10,9 @@ import { Hero } from "../components/hero/Hero";
 import { Projects } from "../components/projects/Projects";
 import { About } from "../components/about/About";
 import { Timeline } from "../components/timeline/Timeline";
-import { Testimonials } from "../components/testimonials/Testimonials";
 import { Contact } from "../components/contact/Contact";
 import { Footer } from "../components/footer/Footer";
+import { TechStackOrb } from "../components/skills/TechStackOrb";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -141,9 +141,9 @@ export default function Home() {
         <main>
           <Hero />
           <Projects />
+          <TechStackOrb />
           <About />
           <Timeline />
-          <Testimonials />
           <Contact />
         </main>
 

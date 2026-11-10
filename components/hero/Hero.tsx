@@ -63,9 +63,9 @@ export function Hero() {
             variants={itemVariants}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-bold tracking-tight text-white leading-[1.08] max-w-4xl"
           >
-            I'm a Frontend Engineer and Design Engineer,{" "}
+            I&apos;m a Full-Stack and Mobile Developer,{" "}
             <span className="opacity-50">
-              building seamless and interactive user experiences{" "}
+              building useful web and mobile products from idea to release{" "}
             </span>
           </motion.h1>
 
@@ -89,7 +89,7 @@ export function Hero() {
               icon={<ArrowUpRight className="w-4.5 h-4.5" />}
               className="px-8 py-4.5"
             >
-              Let's Talk
+              Let&apos;s Talk
             </Button>
           </motion.div>
         </motion.div>
@@ -109,9 +109,9 @@ export function Hero() {
               Core Capabilities
             </span>
             <p className="md:text-md sm:text-base text-text-secondary leading-relaxed font-medium">
-              Specializing in highly immersive front-end applications,
-              interactive 3D WebGL scenes, customizable components, and
-              pixel-perfect layouts.
+              Building end-to-end web applications and native mobile
+              experiences, with thoughtful interfaces and reliable
+              implementations.
             </p>
           </div>
         </motion.div>

@@ -1,21 +1,7 @@
 "use client";
 
-import React from "react";
 import { Container } from "../ui/Container";
 import { socials } from "../../constants/socials";
-import {
-  GithubIcon,
-  LinkedinIcon,
-  TwitterIcon,
-  DribbbleIcon,
-} from "../ui/Icons";
-
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Github: GithubIcon,
-  Linkedin: LinkedinIcon,
-  Twitter: TwitterIcon,
-  Dribbble: DribbbleIcon,
-};
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -29,11 +15,9 @@ export function Footer() {
         </p>
 
         {/* Right Side: Social links */}
-        <div className="flex items-center gap-4">
-          {socials.map((social) => {
-            const IconComponent = iconMap[social.iconName];
-            if (!IconComponent) return null;
-            return (
+        {socials.length > 0 && (
+          <div className="flex items-center gap-4">
+            {socials.map((social) => (
               <a
                 key={social.platform}
                 href={social.url}
@@ -42,11 +26,11 @@ export function Footer() {
                 className="flex items-center justify-center w-9 h-9 rounded-full bg-white/5 border border-white/10 text-text-secondary hover:text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300"
                 aria-label={`Visit my ${social.platform}`}
               >
-                <IconComponent className="w-4 h-4" />
+                {social.platform}
               </a>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
       </Container>
     </footer>
   );

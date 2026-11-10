@@ -1,21 +1,21 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowUpRight, ArrowRight } from "lucide-react";
-import { Container } from "../ui/Container";
 import { Button } from "../ui/Button";
 import { useScrollActive } from "../../hooks/useScrollActive";
 import Image from "next/image";
 import logo from "@/public/assets/joey_logo.png";
 import { socials } from "@/constants/socials";
-import { div } from "framer-motion/client";
 
 const navItems = [
-  { label: "About", href: "/#about" },
-  { label: "Work", href: "/projects" },
-  { label: "Experience", href: "/#experience" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Toolkit", href: "/#toolkit", activeId: "toolkit" },
+  { label: "About", href: "/#about", activeId: "about" },
+  { label: "Work", href: "/projects", activeId: "work" },
+  { label: "Experience", href: "/#experience", activeId: "experience" },
+  { label: "Contact", href: "/#contact", activeId: "contact" },
 ];
 
 export function Navbar() {
@@ -37,6 +37,7 @@ export function Navbar() {
 
   // Track active section for nav indicators
   const activeSection = useScrollActive([
+    "toolkit",
     "about",
     "work",
     "experience",
@@ -68,7 +69,7 @@ export function Navbar() {
           className={`flex items-center justify-between ${isScrolled ? "px-6" : "md:px-20"}`}
         >
           {/* Logo */}
-          <a href="/" className="flex items-center gap-2 group">
+          <Link href="/" className="flex items-center gap-2 group">
             <Image
               src={logo}
               alt="Logo"
@@ -76,18 +77,20 @@ export function Navbar() {
               height={1000}
               className="w-28 md:w-36 h-20 object-contain"
             />
-          </a>
+          </Link>
 
           {/* Desktop Nav Items */}
           <nav className="hidden md:flex items-center gap-8">
             {navItems.map((item) => {
-              const isActive = activeSection === item.href.slice(1);
               if (isMobileMenuOpen) return;
+              const isActive = activeSection === item.activeId;
               return (
-                <a
+                <Link
                   key={item.label}
                   href={item.href}
-                  className="relative text-sm font-medium transition-colors hover:text-white py-2 px-1 text-text-secondary"
+                  className={`relative py-2 px-1 text-sm font-medium transition-colors hover:text-white ${
+                    isActive ? "text-white" : "text-text-secondary"
+                  }`}
                 >
                   {item.label}
 
@@ -102,7 +105,7 @@ export function Navbar() {
                       }}
                     />
                   )} */}
-                </a>
+                </Link>
               );
             })}
             {/* CTA Button */}
@@ -152,9 +155,9 @@ export function Navbar() {
           >
             <div className="flex flex-col gap-4 md:px-40">
               {navItems.map((item) => {
-                const isActive = activeSection === item.href.slice(1);
+                const isActive = activeSection === item.activeId;
                 return (
-                  <a
+                  <Link
                     key={item.label}
                     href={item.href}
                     onClick={closeMobileMenu}
@@ -170,32 +173,32 @@ export function Navbar() {
                         <ArrowRight className="w-6 h-6" />
                       </span>
                     }
-                  </a>
+                  </Link>
                 );
               })}
             </div>
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="flex justify-between text-white w-[95%] md:w-[75%] mx-auto py-10 items-center gap-5  backdrop-blur-md rounded-3xl"
-            >
-              {socials.map((item, i) => (
-                <a
-                  href={item.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  key={i}
-                  className="flex items-center gap-2 "
-                >
-                  <p className="uppercase underline">{item.platform}</p>
-
-                  <ArrowUpRight className="w-6 h-6" />
-                  {/* </span> */}
-                </a>
-              ))}
-            </motion.div>
+            {socials.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="flex justify-between text-white w-[95%] md:w-[75%] mx-auto py-10 items-center gap-5 backdrop-blur-md rounded-3xl"
+              >
+                {socials.map((item) => (
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    key={item.platform}
+                    className="flex items-center gap-2"
+                  >
+                    <p className="uppercase underline">{item.platform}</p>
+                    <ArrowUpRight className="w-6 h-6" />
+                  </a>
+                ))}
+              </motion.div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

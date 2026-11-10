@@ -1,116 +1,85 @@
 "use client";
 
-import React, { useRef } from "react";
 import Image from "next/image";
-import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
+import Link from "next/link";
+import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { Project } from "../../types";
 import { Tag } from "../ui/Tag";
+import { ProjectImagePlaceholder } from "./ProjectImagePlaceholder";
 
 interface ProjectCardProps {
   project: Project;
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  // Mouse position inside card for glow effect
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  function handleMouseMove({
-    clientX,
-    clientY,
-    currentTarget,
-  }: React.MouseEvent) {
-    const { left, top } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
-  }
-
   return (
     <motion.div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       whileHover={{ y: -8 }}
-      className="group relative flex flex-col h-full rounded-3xl overflow-hidden shadow-2xl  transition-shadow duration-500"
+      className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-white/[0.08] bg-[#090a0d] shadow-2xl transition-colors duration-500 hover:border-white/20"
     >
-      {/* Dynamic Mouse Glow Overlay */}
-      <motion.div
-        className="pointer-events-none absolute -inset-px  opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"
-        style={{
-          background: useMotionTemplate`
-            radial-gradient(
-              350px circle at ${mouseX}px ${mouseY}px,
-              rgba(255, 255, 255, 0.04),
-              transparent 80%
-            )
-          `,
-        }}
-      />
-
-      {/* Image Container */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden border-b rounded-3xl border-white/[0.04] bg-neutral-900">
-        <Image
-          src={project.image}
-          alt={project.title}
-          fill
-          priority={false}
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-        />
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#101010]/80 via-transparent to-transparent opacity-60" />
-      </div>
-
-      {/* Content */}
-      <div className="flex flex-col flex-1 py-4 px-5 sm:p-">
-        {/* <span className="text-[10px] sm:text-xs font-semibold  tracking-widest text-white/50 uppercase mb-2">
-          {project.category}
-        </span> */}
-
-        <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white mb-3">
-          {project.title}
-        </h3>
-
-        <p className="text-sm text-text-secondary leading-relaxed font-medium mb-6 flex-1">
-          {project.summary}
-        </p>
-
-        {/* Tech tags */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {project.tags.map((tag) => (
-            <Tag key={tag}>{tag}</Tag>
-          ))}
-        </div>
-
-        {/* Action Button */}
-        <div className="flex items-center justify-between pt-4 border-t border-white/[0.04] mt-auto">
-          <a
-            href={"/projects/" + project.id}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-white group-hover:text-white transition-colors duration-300"
-          >
-            View Project
-            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white/5 border border-white/10 group-hover:bg-white group-hover:text-black transition-all duration-300 transform group-hover:translate-x-1 group-hover:-translate-y-1">
-              <ArrowUpRight className="w-4 h-4" />
-            </span>
-          </a>
-
-          {project.githubUrl && (
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs font-medium text-text-secondary hover:text-white transition-colors"
-            >
-              Source Code
-            </a>
+      <Link
+        href={`/projects/${project.id}`}
+        className="flex h-full flex-col focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-300"
+        aria-label={`View ${project.title} case study`}
+      >
+        <div className="relative aspect-[16/10] w-full overflow-hidden border-b border-white/[0.06] bg-neutral-900">
+          {project.image ? (
+            <Image
+              src={project.image}
+              alt={`${project.title} project cover`}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 600px"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            />
+          ) : (
+            <ProjectImagePlaceholder
+              title={project.title}
+              theme={project.theme}
+              label="Case study cover"
+            />
           )}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          <span className="absolute left-5 top-5 rounded-full border border-white/10 bg-black/70 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-white/70">
+            {project.categories[0]}
+          </span>
         </div>
-      </div>
+
+        <div className="flex flex-1 flex-col gap-5 p-5 sm:p-7">
+          <div className="space-y-3">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">
+              {project.role.join(" / ")}
+            </p>
+            <h3 className="text-xl font-medium tracking-tight text-white sm:text-2xl">
+              {project.title}
+            </h3>
+            <p className="text-sm leading-6 text-text-secondary">
+              {project.summary}
+            </p>
+          </div>
+
+          {project.technologies.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {project.technologies.slice(0, 4).map((technology) => (
+                <Tag key={technology}>{technology}</Tag>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-auto flex items-center justify-between border-t border-white/[0.06] pt-4">
+            <span className="font-mono text-xs uppercase tracking-[0.16em] text-white/70">
+              View case study
+            </span>
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 transition group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:bg-white group-hover:text-black">
+              <ArrowUpRight className="h-4 w-4" />
+            </span>
+          </div>
+        </div>
+      </Link>
     </motion.div>
   );
 }

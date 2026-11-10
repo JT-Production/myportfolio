@@ -2,8 +2,9 @@ import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Projects',
-  description: 'Portfolio projects overview',
+  title: "Projects — Joey",
+  description:
+    "Case studies across product design, frontend, mobile, full-stack, and backend engineering.",
 };
 
 type ProjectsLayoutProps = {
