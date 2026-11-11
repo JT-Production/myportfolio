@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Container } from "../ui/Container";
 import { SectionHeading } from "../ui/SectionHeading";
@@ -5,8 +7,17 @@ import { ProjectCard } from "./ProjectCard";
 import { projects } from "../../constants/projects";
 import { Button } from "../ui/Button";
 import { ArrowRight } from "lucide-react";
+import { usePublicContent } from "../../hooks/usePublicContent";
+import { Project } from "../../types";
+import { ContentRecord } from "../../lib/firebase/content";
+import { toProject } from "../../lib/content/project";
 
 export function Projects() {
+  const { records } = usePublicContent<ContentRecord>("projects", projects);
+  const validProjects = records
+    .map(toProject)
+    .filter((project): project is Project => project !== null);
+
   return (
     <section
       id="work"
@@ -21,7 +32,7 @@ export function Projects() {
 
         {/* Grid List */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
-          {projects.slice(0, 4).map((project) => (
+          {validProjects.slice(0, 4).map((project) => (
             <div key={project.id}>
               <ProjectCard project={project} />
             </div>

@@ -5,8 +5,16 @@ import { motion, Variants } from "framer-motion";
 import { Container } from "../ui/Container";
 import { SectionHeading } from "../ui/SectionHeading";
 import { experiences } from "../../constants/experience";
+import { usePublicContent } from "../../hooks/usePublicContent";
+
+const fallbackExperienceRecords = experiences.map((experience, displayOrder) => ({
+  ...experience,
+  isVisible: true,
+  displayOrder,
+}));
 
 export function Timeline() {
+  const { records } = usePublicContent("experience", fallbackExperienceRecords);
   const containerVariants: Variants = {
     hidden: {},
     visible: {
@@ -52,7 +60,7 @@ export function Timeline() {
             viewport={{ once: true, margin: "-100px" }}
             className="flex flex-col gap-12 sm:gap-16"
           >
-            {experiences.map((exp) => (
+            {records.map((exp) => (
               <motion.div
                 key={exp.id}
                 variants={itemVariants}

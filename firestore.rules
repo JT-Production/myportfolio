@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.enabled == true;
+    }
+
+    function publicProject() {
+      return resource.data.status == 'published'
+        && resource.data.isVisible == true;
+    }
+
+    function visibleContent() {
+      return resource.data.isVisible == true;
+    }
+
+    match /admins/{uid} {
+      allow get: if signedIn() && request.auth.uid == uid;
+      allow list, create, update, delete: if false;
+    }
+
+    match /projects/{projectId} {
+      allow read: if isAdmin() || publicProject();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /skills/{skillId} {
+      allow read: if isAdmin() || visibleContent();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /toolkit/{toolkitId} {
+      allow read: if isAdmin() || visibleContent();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /experience/{experienceId} {
+      allow read: if isAdmin() || visibleContent();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /siteSettings/{settingId} {
+      allow read: if isAdmin()
+        || (settingId == 'main' && resource.data.isPublic == true);
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /media/{mediaId} {
+      allow read, create, update, delete: if isAdmin();
+    }
+
+    match /activityLogs/{activityId} {
+      allow read, create: if isAdmin();
+      allow update, delete: if false;
+    }
+  }
+}

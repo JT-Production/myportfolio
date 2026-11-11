@@ -8,7 +8,8 @@ import { Button } from "../ui/Button";
 import { useScrollActive } from "../../hooks/useScrollActive";
 import Image from "next/image";
 import logo from "@/public/assets/joey_logo.png";
-import { socials } from "@/constants/socials";
+import { ThemeToggle } from "../theme/ThemeToggle";
+import { usePublicSiteSettings } from "../../hooks/usePublicSiteSettings";
 
 const navItems = [
   { label: "Toolkit", href: "/#toolkit", activeId: "toolkit" },
@@ -19,6 +20,7 @@ const navItems = [
 ];
 
 export function Navbar() {
+  const { socials } = usePublicSiteSettings();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -66,7 +68,7 @@ export function Navbar() {
       >
         {/* <Container className="flex items-center justify-between"> */}
         <div
-          className={`flex items-center justify-between ${isScrolled ? "px-6" : "md:px-20"}`}
+          className={`flex items-center justify-between ${isScrolled ? "px-4 sm:px-6" : "md:px-20"}`}
         >
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
@@ -109,14 +111,14 @@ export function Navbar() {
               );
             })}
             {/* CTA Button */}
-            <div className="hidden md:flex items-center">
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
               <Button
-                // href="#contact"
                 variant="outline"
                 size="sm"
-                // icon={<ArrowUpRight className="w-4 h-4" />}
                 onClick={toggleMobileMenu}
-                className="px-8 py-3"
+                aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+                className="px-5 py-3"
               >
                 {isMobileMenuOpen ? (
                   <X className="w-6 h-6" />
@@ -128,17 +130,20 @@ export function Navbar() {
           </nav>
 
           {/* Mobile Menu Toggle */}
-          <button
-            onClick={toggleMobileMenu}
-            className="flex md:hidden items-center justify-center p-3 px-6 rounded-full border border-white/10 bg-[#101010]/80 text-white"
-            aria-label="Toggle mobile menu"
-          >
-            {isMobileMenuOpen ? (
-              <X className="w-5 h-5" />
-            ) : (
-              <Menu className="w-5 h-5" />
-            )}
-          </button>
+          <div className="flex items-center gap-2 md:hidden">
+            <ThemeToggle />
+            <button
+              onClick={toggleMobileMenu}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-[#101010]/80 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-300"
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
+            </button>
+          </div>
         </div>
         {/* </Container> */}
       </motion.header>
@@ -151,7 +156,7 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed top-[73px] left-0 w-full bg-[#050505] border-b px-6 sm:px-12 lg:px-16 border-white/5 z-40  py-8  flex flex-col  shadow-2xl h-screen"
+            className="fixed top-[73px] left-0 w-full bg-[#050505] border-b px-6 sm:px-12 lg:px-16 border-white/5 z-40 py-8 flex flex-col shadow-2xl h-screen"
           >
             <div className="flex flex-col gap-4 md:px-40">
               {navItems.map((item) => {

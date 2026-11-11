@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import localfont from "next/font/local";
+import { ThemeProvider } from "../components/theme/ThemeProvider";
+import { PublicSiteSettingsProvider } from "../hooks/usePublicSiteSettings";
 const NeueHaasGrotesk = localfont({
   src: [
     {
@@ -56,10 +58,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-theme="dark"
       className={`${NeueHaasGrotesk.variable} ${NeueHaasGrotesk.className} h-full scroll-smooth`}
     >
       <body className="min-h-full flex flex-col bg-bg-primary text-white selection:bg-white/10 selection:text-white ">
-        {children}
+        <ThemeProvider>
+          <PublicSiteSettingsProvider>{children}</PublicSiteSettingsProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

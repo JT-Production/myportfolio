@@ -1,17 +1,18 @@
 "use client";
 
 import { Container } from "../ui/Container";
-import { socials } from "../../constants/socials";
+import { usePublicSiteSettings } from "../../hooks/usePublicSiteSettings";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const { socials, copyrightName } = usePublicSiteSettings();
 
   return (
     <footer className="py-12 sm:py-16 bg-[#050505] border-t border-white/[0.04]">
       <Container className="flex flex-col sm:flex-row items-center justify-between gap-6">
         {/* Left Side: Copyright */}
         <p className="text-xs sm:text-sm text-text-secondary font-medium tracking-wide">
-          &copy; {currentYear} Joey. Built with 🤍.
+          &copy; {currentYear} {copyrightName}. Built with 🤍.
         </p>
 
         {/* Right Side: Social links */}

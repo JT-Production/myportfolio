@@ -8,31 +8,28 @@ import { Navbar } from "../../components/navbar/Navbar";
 import { ProjectCard } from "../../components/projects/ProjectCard";
 import { ProjectImagePlaceholder } from "../../components/projects/ProjectImagePlaceholder";
 import { projects } from "../../constants/projects";
-
-const requestedFilters = [
-  "Product Design",
-  "Web Development",
-  "Mobile",
-  "FinTech",
-  "Web3",
-  "AI & SaaS",
-  "Backend",
-];
-
-const filters = [
-  "All",
-  ...requestedFilters.filter((filter) =>
-    projects.some((project) => project.categories.includes(filter)),
-  ),
-];
+import { usePublicContent } from "../../hooks/usePublicContent";
+import { ContentRecord } from "../../lib/firebase/content";
+import { toProject } from "../../lib/content/project";
+import { Project } from "../../types";
+import { optimizedCloudinaryUrl } from "../../lib/cloudinary/imageUrl";
 
 export default function ProjectsPage() {
   const [activeFilter, setActiveFilter] = useState("All");
-  const featuredProject = projects[0];
+  const { records } = usePublicContent<ContentRecord>("projects", projects);
+  const visibleProjects = records
+    .map(toProject)
+    .filter((project): project is Project => project !== null);
+  const filters = [
+    "All",
+    ...new Set(visibleProjects.flatMap((project) => project.categories)),
+  ];
+  const featuredProject =
+    visibleProjects.find((project) => project.featured) ?? visibleProjects[0];
   const filteredProjects =
     activeFilter === "All"
-      ? projects
-      : projects.filter((project) =>
+      ? visibleProjects
+      : visibleProjects.filter((project) =>
           project.categories.includes(activeFilter),
         );
 
@@ -71,7 +68,7 @@ export default function ProjectsPage() {
                   href="#project-archive"
                   className="inline-flex min-h-11 items-center gap-3 rounded-full bg-white px-5 text-sm font-medium text-black transition hover:bg-blue-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-300"
                 >
-                  Browse all {projects.length} projects
+                  Browse all {visibleProjects.length} projects
                   <ArrowDownRight className="h-4 w-4" />
                 </a>
                 <Link
@@ -94,34 +91,34 @@ export default function ProjectsPage() {
                 href={`/projects/${featuredProject.id}`}
                 className="group relative block overflow-hidden rounded-3xl border border-white/10 bg-[#0b0d12] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-300"
               >
-                <div className="relative aspect-[16/11] overflow-hidden">
+                <div className="group/image relative aspect-[16/10] overflow-hidden">
                   {featuredProject.image ? (
                     <Image
-                      src={featuredProject.image}
+                      src={optimizedCloudinaryUrl(featuredProject.image, 1400)}
                       alt={`${featuredProject.title} project cover`}
                       fill
                       priority
                       sizes="(max-width: 1024px) 100vw, 48vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="object-cover transition-transform duration-700 group-hover/image:scale-105"
                     />
                   ) : (
                     <ProjectImagePlaceholder
                       title={featuredProject.title}
+                      showTitle={false}
                       theme={featuredProject.theme}
                     />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-blue-100/70">
-                      Featured / {featuredProject.categories[0]}
-                    </p>
-                    <h2 className="mt-3 text-2xl font-medium text-white sm:text-3xl">
-                      {featuredProject.title}
-                    </h2>
-                    <p className="mt-2 max-w-xl text-sm leading-6 text-white/65">
-                      {featuredProject.summary}
-                    </p>
-                  </div>
+                </div>
+                <div className="space-y-3 p-6 sm:p-8">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-blue-100/70">
+                    Featured / {featuredProject.categories[0]}
+                  </p>
+                  <h2 className="text-2xl font-medium leading-tight text-white sm:text-3xl">
+                    {featuredProject.title}
+                  </h2>
+                  <p className="max-w-xl text-sm leading-6 text-white/65">
+                    {featuredProject.summary}
+                  </p>
                 </div>
               </Link>
             )}
@@ -146,7 +143,7 @@ export default function ProjectsPage() {
               aria-live="polite"
             >
               {filteredProjects.length.toString().padStart(2, "0")} /{" "}
-              {projects.length.toString().padStart(2, "0")} projects
+              {visibleProjects.length.toString().padStart(2, "0")} projects
             </p>
           </div>
 

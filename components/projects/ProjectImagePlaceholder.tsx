@@ -21,12 +21,14 @@ const themeAccents: Record<string, string> = {
 type ProjectImagePlaceholderProps = {
   title: string;
   label?: string;
+  showTitle?: boolean;
   theme: string;
 };
 
 export function ProjectImagePlaceholder({
   title,
   label = "Project visual",
+  showTitle = true,
   theme,
 }: ProjectImagePlaceholderProps) {
   const accent = themeAccents[theme] ?? "#8aa5c5";
@@ -62,9 +64,11 @@ export function ProjectImagePlaceholder({
         <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.24em] text-white/45">
           {label} / screenshot not supplied
         </p>
-        <p className="truncate text-xl font-medium tracking-tight text-white sm:text-2xl">
-          {title}
-        </p>
+        {showTitle && (
+          <p className="truncate text-xl font-medium tracking-tight text-white sm:text-2xl">
+            {title}
+          </p>
+        )}
         <span
           aria-hidden="true"
           className="mt-4 block h-1 w-12"

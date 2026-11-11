@@ -4,10 +4,11 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, Copy, Check } from "lucide-react";
 import { Container } from "../ui/Container";
+import { usePublicSiteSettings } from "../../hooks/usePublicSiteSettings";
 
 export function Contact() {
   const [copied, setCopied] = useState(false);
-  const emailAddress = "joeyofficial707@gmail.com";
+  const { emailAddress } = usePublicSiteSettings();
 
   const handleCopy = async () => {
     try {
@@ -36,7 +37,7 @@ export function Contact() {
             Get In Touch
           </span>
           <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
-            Let's build something exceptional together
+            Let&apos;s build something exceptional together
           </h2>
         </motion.div>
 

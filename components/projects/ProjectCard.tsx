@@ -7,6 +7,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Project } from "../../types";
 import { Tag } from "../ui/Tag";
 import { ProjectImagePlaceholder } from "./ProjectImagePlaceholder";
+import { optimizedCloudinaryUrl } from "../../lib/cloudinary/imageUrl";
 
 interface ProjectCardProps {
   project: Project;
@@ -30,7 +31,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         <div className="relative aspect-[16/10] w-full overflow-hidden border-b border-white/[0.06] bg-neutral-900">
           {project.image ? (
             <Image
-              src={project.image}
+              src={optimizedCloudinaryUrl(project.image, 1000)}
               alt={`${project.title} project cover`}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 600px"

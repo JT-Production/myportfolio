@@ -27,11 +27,11 @@ export function SectionHeading({
       <h2 className="text-xs sm:text-4xl font-semibold tracking-[0.2em] text-white uppercase opacity-90">
         {title}
       </h2>
-      {/* {description && (
+      {description && (
         <p className="text-xl sm:text-lg text-text-secondary font-medium tracking-tight leading-relaxed max-w-xl">
           {description}
         </p>
-      )} */}
+      )}
     </motion.div>
   );
 }
